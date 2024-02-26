@@ -4,7 +4,8 @@ import {
     releaseGetMany,
     releaseUpdate,
     releasePublish,
-    releaseSearch
+    releaseSearch,
+    releaseLineage
 } from '../release';
 import {v4 as uuid} from 'uuid';
 import Boom from '@hapi/boom';
@@ -146,6 +147,21 @@ describe('search', () => {
         expect(second.items[0]).toEqual(archived);
     });
 });
+
+describe('lineage', () => {
+    it('will return the lineage for a given release in descending order', async () => {
+        const createdOne = await releaseCreate({name: 'createdOne'});
+        const createdTwo = await releaseCreate({name: 'createdTwo', parentId: createdOne.id});
+        const createdThree = await releaseCreate({name: 'createdThree', parentId: createdTwo.id});
+        const lineage = await releaseLineage({id: createdThree.id});
+
+        expect(lineage).toHaveLength(3);
+        // Descending Order
+        expect(lineage[0].name).toEqual('createdThree');
+        expect(lineage[1].name).toEqual('createdTwo')
+        expect(lineage[2].name).toEqual('createdOne')
+    })
+})
 
 describe('selections', () => {
     it('will create selections for each provided build', async () => {
