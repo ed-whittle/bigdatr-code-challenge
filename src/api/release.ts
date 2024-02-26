@@ -1,11 +1,13 @@
-import {createHandler} from '../util/handler';
+import { createHandler } from '../util/handler';
 import Release from '../models/release/Release';
-import {releaseCreateSchema} from '../models/release/schemas';
-import {releaseGetSchema} from '../models/release/schemas';
-import {releaseUpdateSchema} from '../models/release/schemas';
-import {releasePublishSchema} from '../models/release/schemas';
-import {releaseGetManySchema} from '../models/release/schemas';
-import {releaseSearchSchema} from '../models/release/schemas';
+import { releaseCreateSchema } from '../models/release/schemas';
+import { releaseGetSchema } from '../models/release/schemas';
+import { releaseUpdateSchema } from '../models/release/schemas';
+import { releasePublishSchema } from '../models/release/schemas';
+import { releaseGetManySchema } from '../models/release/schemas';
+import { releaseSearchSchema } from '../models/release/schemas';
+import { releaseLineageSchema } from '../models/release/schemas';
+// Just following convention, this could be import {releaseCreateSchema, releaseGetSchema ..., releaseLineageSchema} from '../models/release/schemas';
 
 export const releaseCreate = createHandler(
     () => releaseCreateSchema,
@@ -53,3 +55,8 @@ export const releaseSearch = createHandler(
         return await Release.search(input);
     }
 );
+
+export const releaseLineage = createHandler(() => releaseLineageSchema, async (input) => {
+    const releases = await Release.lineage(input)
+    return Promise.all(releases.map((ii) => ii.asPrimitive(false)));
+})

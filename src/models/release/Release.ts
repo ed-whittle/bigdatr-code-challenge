@@ -5,6 +5,7 @@ import update from './update';
 import create from './create';
 import publish from './publish';
 import search from './search';
+import lineage from './lineage';
 import config from '../../config';
 import Build from '../build/Build';
 
@@ -26,6 +27,7 @@ export default class Release {
     static update = update;
     static publish = publish;
     static search = search;
+    static lineage = lineage;
 
     private data: ReleaseData;
     type: 'release';
@@ -42,7 +44,11 @@ export default class Release {
         return this.data.status;
     }
 
-    async selections() {
+    get parentId() {
+        return this.data.parent_id;
+    }
+
+    async selections(orderByAsc = true) {
         const {db} = await config();
         const rows = await db.manyOrNone(
             `
@@ -57,7 +63,7 @@ export default class Release {
         return Promise.all(
             rows.map(async (s) => ({
                 id: s.id,
-                build: await (await Build.getByIdOrThrow({id: s.build_id})).asPrimitive(),
+                build: await (await Build.getByIdOrThrow({id: s.build_id, orderByAsc})).asPrimitive(),
                 startDate: s.start_date,
                 endDate: s.end_date,
                 brand: s.brand,
@@ -79,10 +85,10 @@ export default class Release {
         };
     }
 
-    async asPrimitive() {
+    async asPrimitive(orderByAsc: boolean = true) {
         return {
             ...this.asPrimitiveShallow(),
-            selections: await this.selections()
+            selections: await this.selections(orderByAsc)
         };
     }
 }

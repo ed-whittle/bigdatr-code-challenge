@@ -53,6 +53,10 @@ export const releasePublishSchema = z.object({
     id: z.number().int()
 });
 
+export const releaseLineageSchema = z.object({
+    id: z.number().int(),
+});
+
 export type ReleaseCreateSchema = z.infer<typeof releaseCreateSchema>;
 export type ReleaseGetManySchema = z.infer<typeof releaseGetManySchema>;
 export type ReleaseGetSchema = z.infer<typeof releaseGetSchema>;

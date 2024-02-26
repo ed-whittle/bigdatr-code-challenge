@@ -5,8 +5,8 @@ import {BuildGetSchema, BuildGetManySchema} from './schemas';
 
 export async function getById(input: BuildGetSchema) {
     const {db} = await config();
-    const {id} = input;
-    const data = (await db.oneOrNone(`select * from builds where id = $[id]`, {
+    const {id, orderByAsc = true} = input;
+    const data = (await db.oneOrNone(`select * from builds where id = $[id] ORDER BY end_date ${orderByAsc ? 'ASC' : 'DESC'}`, {
         id
     })) as BuildData | null;
     return data ? new Build(data) : null;

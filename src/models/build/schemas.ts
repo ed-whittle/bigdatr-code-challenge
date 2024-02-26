@@ -3,7 +3,8 @@ import {pagination} from '../../schemas/paginationSchema';
 
 export const buildGetSchema = z.object({
     id: z.number().int(),
-    includeArchived: z.boolean().optional()
+    includeArchived: z.boolean().optional(),
+    orderByAsc: z.boolean().optional()
 });
 
 export const buildGetManySchema = z
